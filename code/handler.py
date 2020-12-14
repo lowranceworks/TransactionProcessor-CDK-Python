@@ -11,7 +11,7 @@ import datetime
 # def process_purchase(message, context):
 
 #     #Input Example
-#     #{ 'TransactionType': 'PURCHASE'} 
+#     {"TransactionType": "PURCHASE"}
 
 #     #1. Log input message
 #     print("Received message from Step Functions:")
@@ -47,75 +47,58 @@ import datetime
 #
 #=============================================
 
-#new function to pass payload to receipt generator
 def process_purchase(event, context):
     date = datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S')
     message = 'Hello from lambda land inside the process_purchase function'  
     customerID = str(uuid.uuid1())
-    output = {'CustomerID': customerID, 'Amount': 50, 'TransactionType': 'PURCHASE', 'DateTime': date, 'message': message}
+    output = {"CustomerID": customerID, "Amount": 50, "TransactionType": "PURCHASE", "DateTime": date, "message": message}
 
     return output 
 
 
 ## new function
 def generate_purchase_receipt(event, context):
-    # 1. event argument is passed from process_purchase handler
-    # data = event  # works 
-    # data = event["Payload"] # works
-    data = json.load(event["Payload"]) # ?
-
-    # data = event.Payload # Does not work 
-    # data = event."Payload" # ? 
-    # 2. 
-
+    data = event["Payload"] # works
 
     # 2. Read off the input arguments 
-
-    customerID = data.CustomerID
-    amount = data.Amount
-    transactionType = data.TransactionType
-    date = data.DateTime
+    customerID = data["CustomerID"]
+    amount = data["Amount"]
+    transactionType = data["TransactionType"]
+    date = data["DateTime"]
     message = 'Hello from lambda land inside the generate purchase receipt function'  
 
     # 3. Generate a random id
     receiptID = str(uuid.uuid1())
     
-    # # 4. do some stuff
+    # format response
+    output = {"CustomerID": customerID, "Amount": amount, "TransactionType": transactionType, "PurchaseDate": date, "Message": message, "ReceiptID": receiptID}
 
-    # # 5. Format and return response 
-    return {'CustomerID': customerID, 'Amount': amount, 'TransactionType': transactionType, 'PurchaseDate': date, 'Message': message, 'ReceiptID': receiptID, 'Success': 'True' }
-    # print(data)
-    # return data
+    return output 
 
-##original function
-# def generate_purchase_receipt(payload, metadata):
+#new function to pass payload to receipt generator
+def process_refund(event, context):
+    date = datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S')
+    message = 'Hello from lambda land inside the process_refund function'  
+    customerID = str(uuid.uuid1())
+    output = {"CustomerID": customerID, "Amount": 50, "TransactionType": "REFUND", "DateTime": date, "message": message}
 
-#     #Input Example
-#     #{ 'TransactionType': 'PURCHASE'} 
-
-#     #1. Log input message
-#     print("Received message from Step Functions:")
-#     print(payload)
-
-#     #2. Construct response object
-#     response = {} 
-
-#     return response 
+    return output 
 
 
-# def generate_refund_receipt(TransactionType, TimeStamp, Message):
+def generate_refund_receipt(event, context):
+    data = event["Payload"] # works
 
-#     #Input Example
-#     #{ 'TransactionType': 'PURCHASE'} 
+    # 2. Read off the input arguments 
+    customerID = data["CustomerID"]
+    amount = data["Amount"]
+    transactionType = data["TransactionType"]
+    date = data["DateTime"]
+    message = 'Hello from lambda land inside the generate_refund_receipt function'  
 
-#     #1. Log input message
-#     print("Received message from Step Functions:")
-#     print(process)
+    # 3. Generate a random id
+    receiptID = str(uuid.uuid1())
+    
+    # format response
+    output = {"CustomerID": customerID, "Amount": amount, "TransactionType": transactionType, "PurchaseDate": date, "Message": message, "ReceiptID": receiptID}
 
-#     #2. Construct response object
-#     response = {} 
-#     response['TransactionType'] = TransactionType['TransactionType']
-#     response['Timestamp'] = TimeStamp
-#     response['Message'] = 'Hello from lambda land inside the generate_refund_receipt function'  
-
-#     return response 
+    return output 
