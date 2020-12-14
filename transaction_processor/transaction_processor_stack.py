@@ -68,9 +68,8 @@ class TransactionProcessorStack(core.Stack):
         TransactionTypeEqualsPurchase = sfn.Condition.string_equals('$.TransactionType', 'PURCHASE')
         TransactionTypeEqualsRefund = sfn.Condition.string_equals('$.TransactionType', 'REFUND')
 
-        # StateMachineDefinition = TransactionChoice.when(TransactionTypeEqualsPurchase, ProcessPurchaseTask).when(TransactionTypeEqualsRefund, ProcessRefundTask) # works 
-        # StateMachineDefinition = TransactionChoice.when(TransactionTypeEqualsPurchase, ProcessPurchaseTask).next(GeneratePurchaseReceiptTask).when(TransactionTypeEqualsRefund, ProcessRefundTask).next(GenerateRefundReceiptTask)
-        StateMachineDefinition = ProcessPurchaseState.next(GeneratePurchaseReceiptState)
+        # StateMachineDefinition = TransactionChoice.when(TransactionTypeEqualsPurchase, ProcessPurchaseState).when(TransactionTypeEqualsRefund, ProcessRefundState) # works 
+        StateMachineDefinition = TransactionChoice.when(TransactionTypeEqualsPurchase, ProcessPurchaseState.next(GeneratePurchaseReceiptState)).when(TransactionTypeEqualsRefund, ProcessRefundState.next(GenerateRefundReceiptState))
 
         Workflow = sfn.StateMachine(self, 'transaction workflow', definition=StateMachineDefinition)
 
